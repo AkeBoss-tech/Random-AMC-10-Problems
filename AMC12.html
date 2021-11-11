@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMC 12 Practice</title>
+    <style>
+        button {
+            background-color: #4CAF50; /* Green */
+            border: 2px solid #4CAF50;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+        }
+
+        button:hover {
+            color: #4CAF50;
+            background-color: white;
+            transition-property: color, background-color;
+            transition-duration: 2s, 2s;
+        }
+
+        p {
+            font-size: larger;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        let year = 2021
+        let exam = true
+        let problem = 13
+        let problems = []
+        let mode = true
+
+        let correct = 0
+        let answers = 0
+
+        let phase = "Start"
+        // Start, Problem, Solution, Questions
+
+        function update() {
+            $('#prev').text('You did ' + String(problems))
+            $('#iframeProblem').attr('src', generateProblem())
+            $('#iframeProblem').height(200)
+            $('#iframeAnswer').attr('src', generateSolution())
+            $('#Source').attr('href', generateURL())
+            $('#score').text("Score " + String(correct) + "/" + String(answers))
+            $('#problemText').text(stringifyProblem())
+        }
+
+        function move(num) {
+            var height = $('#iframeProblem').height();
+            $('#iframeProblem').css('height', height +num | 0);
+        }
+
+        function getRandomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+        }
+
+        function stringifyProblem() {
+            return " " + String(year) + " - " + examID() + " - "  + String(problem)
+        }
+
+        function randomizeData() {
+            problem = getRandomInt(1, 26)
+            year = getRandomInt(2002, new Date().getFullYear())
+            exam = Math.random() < 0.5
+            mode = Math.random() < 0.5
+            update()
+        }
+
+        function examID() {
+            if (exam) {
+                return "12A"
+            } else {
+                return "12B"
+            }
+        }
+
+        function advance() {
+            switch (phase) {
+                case 'Start':
+                    $('#start').hide()
+                    $('#Problem').show()
+                    $('#Answer').hide()
+                    phase = 'Problem'
+                    break
+                case 'Problem':
+                    $('#start').hide()
+                    $('#Problem').hide()
+                    $('#Answer').show()
+                    phase = 'Answer'
+                    break
+                case 'Answer':
+                    $('#start').hide()
+                    $('#Problem').show()
+                    $('#Answer').hide()
+                    phase = 'Problem'
+                    break
+                
+            }
+        }
+
+        function generateURL() {
+            let url = "https://artofproblemsolving.com/wiki/index.php/" + String(year) + "_AMC_" + examID() + "_Problems/Problem_" + String(problem)
+            return url
+        }
+
+        function generateProblem() {
+            if (mode) {
+                return generateURL() + "#Problem_" + String(problem)
+            } else {
+                return generateURL() + "#Problem"
+            }
+        }
+
+        function generateSolution() {
+            return generateURL() + "#Solution_1"
+        }
+
+        function modeClick() {
+            mode = !mode
+            update()
+        }
+
+        function changeAnswer(letter) {
+            $('#answer').text('Your choice was ' + letter)
+            advance()
+        }
+
+        function answered(num) {
+            problems.push(stringifyProblem())
+            correct += num
+            answers += 1
+            randomizeData()
+            advance()
+            update()
+        }
+
+        
+    </script>
+</head>
+<body style='text-align: center;'>
+    <p id='score'>1/2</p>
+    <div id='Problem'>
+        <button id='mode' onclick='modeClick()'>Scroll</button>
+        <button onclick='move(-15)'><</button>
+        <button onclick='move(15)'>></button>
+        <p id='problemText'></p>
+        <br>
+        <iframe id='iframeProblem' src="https://artofproblemsolving.com/wiki/index.php/2019_AMC_10A_Problems/Problem_12#Problem_12" scrolling="no" frameborder="0" height='200px' width='75%'></iframe>
+        <a id='Source' href=''><br>Source</a>
+        <br>
+        
+        <br><br>
+        <button class='button' onclick="changeAnswer('A')">A</button>
+        <button onclick="changeAnswer('B')">B</button>
+        <button onclick="changeAnswer('C')">C</button>
+        <button onclick="changeAnswer('D')">D</button>
+        <button onclick="changeAnswer('E')">E</button>
+    </div>
+    <div id='Answer'>
+        <p id="answer">Your choice was A</p>
+        <iframe id='iframeAnswer' src="https://artofproblemsolving.com/wiki/index.php/2020_AMC_10A_Problems/Problem_12#Solution_1" frameborder="0" height='400px' width='80%'></iframe>
+        <br>
+        <button onclick='answered(0)'>Wrong</button>
+        <button onclick='answered(1)'>Right</button>
+    </div>
+    <p id='prev'></p>
+    <script>
+        randomizeData()
+        $('#start').hide()
+        $('#Problem').show()
+        $('#Answer').hide()
+    </script>
+</body>
+</html>
